@@ -13,6 +13,7 @@ import WelcomeScreen from "./screens/WelcomeScreen";
 import { Colors } from "./constants/styles";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
 import IconButton from "./components/ui/IconButton";
+import UserContextProvider from "./store/user-context";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -115,7 +116,9 @@ export default function App() {
     <>
       <StatusBar style="light" />
       <AuthContextProvider>
-        <Root />
+        <UserContextProvider>
+          <Root />
+        </UserContextProvider>
       </AuthContextProvider>
     </>
   );
