@@ -14,6 +14,8 @@ import { Colors } from "./constants/styles";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
 import IconButton from "./components/ui/IconButton";
 import UserContextProvider from "./store/user-context";
+import HistoryScreen from "./screens/HistoryScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -46,28 +48,47 @@ function AuthenticatedStack() {
 
   return (
     <Tab.Navigator
+      initialRouteName="Upload"
       screenOptions={{
         headerStyle: { backgroundColor: Colors.primary500 },
         headerTintColor: "white",
         tabBarStyle: { backgroundColor: Colors.primary500 },
         tabBarActiveTintColor: Colors.accent500,
-        tabBarInactiveTintColor: "gray",
+        tabBarInactiveTintColor: Colors.accent400,
+        headerRight: ({ tintColor }) => (
+          <IconButton
+            icon="exit"
+            color={tintColor}
+            size={24}
+            onPress={authCtx.logout}
+          />
+        ),
       }}
     >
       <Tab.Screen
-        name="Welcome"
+        name="History"
+        component={HistoryScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="time-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Upload"
         component={WelcomeScreen}
         options={{
-          headerRight: ({ tintColor }) => (
-            <IconButton
-              icon="exit"
-              color={tintColor}
-              size={24}
-              onPress={authCtx.logout}
-            />
-          ),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="camera" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" color={color} size={size} />
           ),
         }}
       />
