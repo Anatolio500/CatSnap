@@ -46,6 +46,8 @@ function SettingsForm() {
       };
 
       await updateUserData(userCtx.id, authCtx.token, userData);
+
+      Alert.alert("Update successfull");
     } catch (error) {
       console.log(error);
       Alert.alert(
