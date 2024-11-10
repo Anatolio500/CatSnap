@@ -19,7 +19,6 @@ function WelcomeScreen() {
       const userData = await fetchUserData(email, token);
       userCtx.setUser(userData);
 
-      console.log(userCtx);
       return await fetchUserData();
     }
     LoadUser();

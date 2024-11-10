@@ -117,7 +117,6 @@ function Root() {
       const storedToken = await AsyncStorage.getItem("token");
       if (storedToken) {
         const storedEmail = await AsyncStorage.getItem("email");
-        console.log(storedEmail);
         authCtx.authenticate(storedToken, storedEmail);
       }
 
