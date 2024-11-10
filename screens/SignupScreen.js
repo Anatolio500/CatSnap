@@ -18,7 +18,16 @@ function SignupScreen() {
     setIsAuthenticating(true);
     try {
       const token = await createUser(email, password);
-      await createUserData({ email: email, isAdmin: false }, token);
+      await createUserData(
+        {
+          email: email,
+          username: "",
+          firstname: "",
+          lastname: "",
+          isAdmin: false,
+        },
+        token
+      );
       const userData = await fetchUserData(email, token);
       await userCtx.setUser(userData);
       authCtx.authenticate(token);

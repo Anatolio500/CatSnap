@@ -1,18 +1,23 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 import { useState, useContext } from "react";
 
 import Button from "../ui/Button";
+import LoadingOverlay from "../ui/LoadingOverlay";
 import SettingsInput from "./SettingsInput";
 import { UserContext } from "../../store/user-context";
+import { updateUserData } from "../../util/http";
+import { AuthContext } from "../../store/auth-context";
 
 function SettingsForm() {
+  const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
-  console.log(userCtx);
 
   const [emailAddress, setEmailAddress] = useState(userCtx.email);
-  const [username, setUsername] = useState("");
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
+  const [username, setUsername] = useState(userCtx.username);
+  const [firstname, setFirstname] = useState(userCtx.firstname);
+  const [lastname, setLastname] = useState(userCtx.lastname);
+
+  const [isUpdating, setIsUpdating] = useState(false);
 
   function updateInputValueHandler(inputType, enteredValue) {
     switch (inputType) {
@@ -31,9 +36,28 @@ function SettingsForm() {
     }
   }
 
-  function submitHandler() {
-    console.log(userCtx.id);
-    console.log(userCtx.email);
+  async function submitHandler() {
+    setIsUpdating(true);
+    try {
+      const userData = {
+        username: username,
+        firstname: firstname,
+        lastname: lastname,
+      };
+
+      await updateUserData(userCtx.id, authCtx.token, userData);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Update failed",
+        "Could not update user. Please check your input and try again later!"
+      );
+    }
+    setIsUpdating(false);
+  }
+
+  if (isUpdating) {
+    return <LoadingOverlay message={"Updating user..."} />;
   }
 
   return (

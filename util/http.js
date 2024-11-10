@@ -23,9 +23,11 @@ export async function fetchUserData(email, token) {
   }
 }
 
-// export function updateUserData(id, userData) {
-//   return axios.put(BACKEND_URL + `/users/${id}.json`, userData);
-// }
+export async function updateUserData(id, token, userData) {
+  console.log(id);
+  console.log(userData);
+  return axios.patch(BACKEND_URL + `/users/${id}.json?auth=` + token, userData);
+}
 
 // export function deleteUserData(id) {
 //   return axios.delete(BACKEND_URL + `/users/${id}.json`);
