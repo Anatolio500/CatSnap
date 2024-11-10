@@ -24,8 +24,6 @@ export async function fetchUserData(email, token) {
 }
 
 export async function updateUserData(id, token, userData) {
-  console.log(id);
-  console.log(userData);
   return axios.patch(BACKEND_URL + `/users/${id}.json?auth=` + token, userData);
 }
 

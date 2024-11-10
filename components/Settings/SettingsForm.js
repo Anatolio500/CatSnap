@@ -49,7 +49,6 @@ function SettingsForm() {
 
       Alert.alert("Update successfull");
     } catch (error) {
-      console.log(error);
       Alert.alert(
         "Update failed",
         "Could not update user. Please check your input and try again later!"
