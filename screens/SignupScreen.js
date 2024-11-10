@@ -30,7 +30,7 @@ function SignupScreen() {
       );
       const userData = await fetchUserData(email, token);
       await userCtx.setUser(userData);
-      authCtx.authenticate(token);
+      authCtx.authenticate(token, email);
     } catch (error) {
       Alert.alert(
         "Authentication failed",

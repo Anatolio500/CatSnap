@@ -4,23 +4,26 @@ import { StyleSheet, Text, Touchable, View } from "react-native";
 import { AuthContext } from "../store/auth-context";
 import { Colors } from "../constants/styles";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { fetchUserData } from "../util/http";
+import { UserContext } from "../store/user-context";
 
 function WelcomeScreen() {
-  // const [fetchedMessage, setFetchedMessage] = useState("");
-
   const authCtx = useContext(AuthContext);
-  const token = authCtx.token;
+  const userCtx = useContext(UserContext);
 
-  // useEffect(() => {
-  //   axios
-  //     .get(
-  //       "https://authentication-daf7d-default-rtdb.europe-west1.firebasedatabase.app/message.json?auth=" +
-  //         token
-  //     )
-  //     .then((response) => {
-  //       setFetchedMessage(response.data);
-  //     });
-  // }, [token]);
+  const token = authCtx.token;
+  const email = authCtx.email;
+
+  useEffect(() => {
+    async function LoadUser() {
+      const userData = await fetchUserData(email, token);
+      userCtx.setUser(userData);
+
+      console.log(userCtx);
+      return await fetchUserData();
+    }
+    LoadUser();
+  }, [token]);
 
   return (
     <View style={styles.rootContainer}>

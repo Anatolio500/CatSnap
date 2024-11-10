@@ -116,7 +116,9 @@ function Root() {
     async function fetchToken() {
       const storedToken = await AsyncStorage.getItem("token");
       if (storedToken) {
-        authCtx.authenticate(storedToken);
+        const storedEmail = await AsyncStorage.getItem("email");
+        console.log(storedEmail);
+        authCtx.authenticate(storedToken, storedEmail);
       }
 
       setIsTryingLogin(false);

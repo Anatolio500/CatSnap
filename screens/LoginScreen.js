@@ -20,7 +20,7 @@ function LoginScreen() {
       const token = await login(email, password);
       const userData = await fetchUserData(email, token);
       userCtx.setUser(userData);
-      authCtx.authenticate(token);
+      authCtx.authenticate(token, email);
     } catch (error) {
       Alert.alert(
         "Authentication failed",
