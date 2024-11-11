@@ -1,11 +1,13 @@
-import axios from "axios";
-import { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, Touchable, View } from "react-native";
-import { AuthContext } from "../store/auth-context";
-import { Colors } from "../constants/styles";
+import { useContext, useEffect } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { launchCameraAsync } from "expo-image-picker";
+import { launchImageLibraryAsync } from "expo-image-picker";
 import Ionicons from "react-native-vector-icons/Ionicons";
+
+import { Colors } from "../constants/styles";
 import { fetchUserData } from "../util/http";
 import { UserContext } from "../store/user-context";
+import { AuthContext } from "../store/auth-context";
 
 function WelcomeScreen() {
   const authCtx = useContext(AuthContext);
@@ -24,16 +26,32 @@ function WelcomeScreen() {
     LoadUser();
   }, [token]);
 
+  async function ImagePickerCamera() {
+    const image = await launchCameraAsync();
+    console.log(image);
+  }
+
   return (
     <View style={styles.rootContainer}>
-      <View style={styles.containers}>
+      <Pressable
+        style={({ pressed }) => [
+          styles.containers,
+          pressed ? styles.buttonPressed : null,
+        ]}
+        onPress={ImagePickerCamera}
+      >
         <Ionicons name="camera-outline" size={75} color="white" />
         <Text style={styles.text}>Take photo</Text>
-      </View>
-      <View style={styles.containers}>
+      </Pressable>
+      <Pressable
+        style={({ pressed }) => [
+          styles.containers,
+          pressed ? styles.buttonPressed : null,
+        ]}
+      >
         <Ionicons name="images-outline" size={75} color="white" />
         <Text style={styles.text}>Choose from gallery</Text>
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -62,5 +80,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 8,
     color: "white",
+  },
+  button: { flex: 1 },
+  buttonPressed: {
+    opacity: 0.5,
   },
 });
