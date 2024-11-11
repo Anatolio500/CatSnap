@@ -27,16 +27,38 @@ export async function updateUserData(id, token, userData) {
   return axios.patch(BACKEND_URL + `/users/${id}.json?auth=` + token, userData);
 }
 
-// export function deleteUserData(id) {
-//   return axios.delete(BACKEND_URL + `/users/${id}.json`);
-// }
+// History
 
-// Image Validation
+export async function createHistoryData(historyData, token) {
+  const response = await axios.post(
+    BACKEND_URL + "/historys.json?auth=" + token,
+    historyData
+  );
+  const id = response.data.name;
+  return id;
+}
 
-export async function createStaffPicture(Data, token) {
+export async function fetchHistoryData(email, token) {
+  const response = await axios.get(
+    BACKEND_URL + "/historys.json?auth=" + token
+  );
+  const historyData = response.data;
+  const responseArray = [];
+
+  for (const key in historyData) {
+    if (historyData[key].email === email)
+      responseArray.push({ id: key, ...historyData[key] });
+  }
+
+  return responseArray;
+}
+
+// Validation
+
+export async function createValidationImage(data, token) {
   const response = await axios.post(
     BACKEND_URL + "/validation.json?auth=" + token,
-    Data
+    data
   );
   const id = response.data.name;
   return id;

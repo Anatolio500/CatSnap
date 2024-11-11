@@ -9,7 +9,7 @@ function HistoryItem({ imageUrl, predictedBreed }) {
         style={({ pressed }) => (pressed ? styles.buttonPressed : null)}
       >
         <View>
-          <Image source={imageUrl} style={styles.image} />
+          <Image source={{ uri: imageUrl }} style={styles.image} />
           <Text style={styles.title}>{predictedBreed}</Text>
         </View>
       </Pressable>
