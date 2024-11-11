@@ -31,6 +31,11 @@ function WelcomeScreen() {
     console.log(image);
   }
 
+  async function ImagePickerGallery() {
+    const image = await launchImageLibraryAsync();
+    console.log(image);
+  }
+
   return (
     <View style={styles.rootContainer}>
       <Pressable
@@ -48,6 +53,7 @@ function WelcomeScreen() {
           styles.containers,
           pressed ? styles.buttonPressed : null,
         ]}
+        onPress={ImagePickerGallery}
       >
         <Ionicons name="images-outline" size={75} color="white" />
         <Text style={styles.text}>Choose from gallery</Text>
