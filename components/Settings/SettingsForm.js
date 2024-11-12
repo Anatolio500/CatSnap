@@ -92,7 +92,7 @@ function SettingsForm() {
           keyboardType="email-address"
           editable={true}
         />
-        <View style={styles.buttons}>
+        <View style={styles.button}>
           <Button onPress={submitHandler}>Update</Button>
         </View>
       </View>
@@ -103,7 +103,7 @@ function SettingsForm() {
 export default SettingsForm;
 
 const styles = StyleSheet.create({
-  buttons: {
+  button: {
     marginTop: 12,
   },
 });

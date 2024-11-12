@@ -9,7 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
-import WelcomeScreen from "./screens/WelcomeScreen";
+import UploadScreen from "./screens/UploadScreen";
 import { Colors } from "./constants/styles";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
 import IconButton from "./components/ui/IconButton";
@@ -76,7 +76,7 @@ function AuthenticatedStack() {
       />
       <Tab.Screen
         name="Upload"
-        component={WelcomeScreen}
+        component={UploadScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="camera" color={color} size={size} />
