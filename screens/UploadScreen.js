@@ -12,7 +12,6 @@ import { UserContext } from "../store/user-context";
 import { AuthContext } from "../store/auth-context";
 import { TouchableOpacity } from "react-native";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
-import UploadImage from "../components/Upload/UploadImage";
 
 function UploadScreen() {
   const authCtx = useContext(AuthContext);

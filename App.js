@@ -13,9 +13,11 @@ import UploadScreen from "./screens/UploadScreen";
 import { Colors } from "./constants/styles";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
 import IconButton from "./components/ui/IconButton";
-import UserContextProvider from "./store/user-context";
+import UserContextProvider, { UserContext } from "./store/user-context";
 import HistoryScreen from "./screens/HistoryScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import ValidationScreen from "./screens/ValidationScreen";
+import ValidationListScreen from "./screens/ValidationListScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -43,8 +45,24 @@ function AuthStack() {
   );
 }
 
+function ValidationStack() {
+  const authCtx = useContext(AuthContext);
+
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Validation list" component={ValidationListScreen} />
+      <Stack.Screen name="Validation item" component={ValidationScreen} />
+    </Stack.Navigator>
+  );
+}
+
 function AuthenticatedStack() {
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
 
   return (
     <Tab.Navigator
@@ -65,6 +83,21 @@ function AuthenticatedStack() {
         ),
       }}
     >
+      {userCtx.isAdmin ? (
+        <Tab.Screen
+          name="Validation"
+          component={ValidationStack}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons
+                name="shield-checkmark-outline"
+                color={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+      ) : null}
       <Tab.Screen
         name="History"
         component={HistoryScreen}
