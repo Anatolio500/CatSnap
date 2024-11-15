@@ -7,7 +7,7 @@ import { firebase } from "../firebaseConfig";
 import axios from "axios";
 
 import { Colors } from "../constants/styles";
-import { fetchUserData } from "../util/http";
+import { createValidationImage, fetchUserData } from "../util/http";
 import { UserContext } from "../store/user-context";
 import { AuthContext } from "../store/auth-context";
 import { TouchableOpacity } from "react-native";

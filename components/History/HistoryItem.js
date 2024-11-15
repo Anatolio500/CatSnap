@@ -2,7 +2,6 @@ import { Pressable, StyleSheet, Text, View, Image } from "react-native";
 import { Colors } from "../../constants/styles";
 
 function HistoryItem({ imageUrl, predictedBreed }) {
-  console.log(imageUrl);
   return (
     <View style={styles.historyItem}>
       <Pressable

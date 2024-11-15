@@ -63,3 +63,34 @@ export async function createValidationImage(data, token) {
   const id = response.data.name;
   return id;
 }
+
+export async function fetchValidationImages(token) {
+  const response = await axios.get(
+    BACKEND_URL + "/validation.json?auth=" + token
+  );
+
+  const validationData = response.data;
+  const responseArray = [];
+
+  for (const key in validationData) {
+    responseArray.push({ id: key, ...validationData[key] });
+  }
+
+  return responseArray;
+}
+
+export async function fetchValidationImage(id, token) {
+  const response = await axios.get(
+    BACKEND_URL + `/validation/${id}.json?auth=` + token
+  );
+
+  return response.data;
+}
+
+export async function deleteValidationImage(id, token) {
+  const response = await axios.delete(
+    BACKEND_URL + `/validation/${id}.json?auth=` + token
+  );
+
+  return response.data;
+}
