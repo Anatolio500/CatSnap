@@ -1,37 +1,26 @@
-import { useContext, useEffect, useState } from "react";
 import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useState, useContext } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
 import { firebase } from "../firebaseConfig";
+import { TouchableOpacity } from "react-native";
 import axios from "axios";
 
-import { Colors } from "../constants/styles";
-import { createValidationImage, fetchUserData } from "../util/http";
-import { UserContext } from "../store/user-context";
-import { AuthContext } from "../store/auth-context";
-import { TouchableOpacity } from "react-native";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
+import { Colors } from "../constants/styles";
+import { createHistoryData, createValidationImage } from "../util/http";
+import { AuthContext } from "../store/auth-context";
+import { UserContext } from "../store/user-context";
 
 function UploadScreen() {
+  const navigation = useNavigation();
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
 
-  const token = authCtx.token;
-  const email = authCtx.email;
-
-  useEffect(() => {
-    async function LoadUser() {
-      const userData = await fetchUserData(email, token);
-      userCtx.setUser(userData);
-
-      return await fetchUserData();
-    }
-    LoadUser();
-  }, [token]);
-
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [prediction, setPrediction] = useState(null);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -63,37 +52,92 @@ function UploadScreen() {
     setUploading(true);
 
     try {
-      const { uri } = await FileSystem.getInfoAsync(image);
-      // const blob = await new Promise((resolve, reject) => {
-      //   const xhr = new XMLHttpRequest();
-      //   xhr.onload = () => {
-      //     resolve(xhr.response);
-      //   };
-      //   xhr.onerror = (e) => {
-      //     reject(new TypeError("Network request failed"));
-      //   };
-      //   xhr.responseType = "blob";
-      //   xhr.open("GET", uri, true);
-      //   xhr.send(null);
-      // });
+      // First, send the image to the Flask backend for prediction
+      const formData = new FormData();
 
-      const response = await axios.get(uri, { responseType: "blob" });
-      const blob = response.data;
+      formData.append("image", {
+        uri: image,
+        type: "image/jpeg", // Adjust the type if needed
+        name: "photo.jpg", // You can give any name
+      });
+
+      // Replace with your Flask server's IP address and port
+      const serverUrl = "http://192.168.0.105:5000/predict"; // Update this with your server's IP
+
+      // Send the image to your Flask backend
+      const response = await axios.post(serverUrl, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // Handle the prediction response
+      console.log("Response from server:", response.data);
+      setPrediction(response.data.class_label);
+      console.log("prediction ", prediction);
+
+      // Then, upload the image to Firebase Storage
+      // Convert the image URI to a blob
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function (e) {
+          console.error(e);
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", image, true);
+        xhr.send(null);
+      });
 
       const filename = image.substring(image.lastIndexOf("/") + 1);
-      const ref = firebase.storage().ref().child(filename);
+      const historyRef = firebase.storage().ref().child(`history/${filename}`);
 
-      await ref.put(blob);
+      await historyRef.put(blob);
 
-      const dowloadUrl = await ref.getDownloadURL();
-      console.log("File is available at: ", dowloadUrl);
+      const validationRef = firebase
+        .storage()
+        .ref()
+        .child(`validation/${filename}`);
+
+      await validationRef.put(blob);
+
+      // We're done with the blob, close and release it
+      blob.close();
+
+      const historyDownloadUrl = await historyRef.getDownloadURL();
+      console.log("File is available history at:", historyDownloadUrl);
+
+      const validationDownloadUrl = await validationRef.getDownloadURL();
+      console.log("File is available validation at:", validationDownloadUrl);
+
+      const dataId = await createHistoryData(
+        {
+          email: userCtx.email,
+          imageUrl: historyDownloadUrl,
+          predictedBreed: response.data.class_label,
+        },
+        authCtx.token
+      );
+      await createValidationImage(
+        {
+          email: userCtx.email,
+          imageUrl: validationDownloadUrl,
+          prediction: response.data.class_label,
+        },
+        authCtx.token
+      );
 
       setUploading(false);
-      Alert.alert("Photo uploaded");
+      Alert.alert("Success", "Photo uploaded and prediction received.");
       setImage(null);
+      navigation.navigate("Upload result", { dataId: dataId, uploaded: true });
     } catch (error) {
-      console.error(error);
+      console.error("Error:", error);
       setUploading(false);
+      Alert.alert("Error", "There was an error processing your image.");
     }
   };
 
@@ -102,62 +146,72 @@ function UploadScreen() {
   }
 
   if (uploading) {
-    return <LoadingOverlay message={"Uploading image"} />;
-  }
-
-  if (image !== null) {
-    return (
-      <View style={styles.rootContainer}>
-        <View style={styles.uploadContainer}>
-          <Image source={{ uri: image }} style={{ width: 300, height: 300 }} />
-        </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
-            onPress={cancelUpload}
-          >
-            <Ionicons name="close-circle-outline" size={20} color="white" />
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.uploadButton]}
-            onPress={uploadImage}
-          >
-            <Ionicons
-              name="checkmark-circle-outline"
-              size={20}
-              color="white"
-              style={styles.icons}
-            />
-            <Text style={styles.buttonText}>Upload</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
+    return <LoadingOverlay message={"Processing image..."} />;
   }
 
   return (
     <View style={styles.rootContainer}>
-      <Pressable
-        style={({ pressed }) => [
-          styles.containers,
-          pressed ? styles.buttonPressed : null,
-        ]}
-        onPress={takeImage}
-      >
-        <Ionicons name="camera-outline" size={75} color="white" />
-        <Text style={styles.text}>Take photo</Text>
-      </Pressable>
-      <Pressable
-        style={({ pressed }) => [
-          styles.containers,
-          pressed ? styles.buttonPressed : null,
-        ]}
-        onPress={pickImage}
-      >
-        <Ionicons name="images-outline" size={75} color="white" />
-        <Text style={styles.text}>Choose from gallery</Text>
-      </Pressable>
+      {image !== null ? (
+        <>
+          <View style={styles.uploadContainer}>
+            <Image
+              source={{ uri: image }}
+              style={{ width: 300, height: 300 }}
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, styles.cancelButton]}
+              onPress={cancelUpload}
+            >
+              <Ionicons name="close-circle-outline" size={20} color="white" />
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.uploadButton]}
+              onPress={uploadImage}
+            >
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={20}
+                color="white"
+                style={styles.icons}
+              />
+              <Text style={styles.buttonText}>Upload</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <>
+          <Pressable
+            style={({ pressed }) => [
+              styles.containers,
+              pressed ? styles.buttonPressed : null,
+            ]}
+            onPress={takeImage}
+          >
+            <Ionicons name="camera-outline" size={75} color="white" />
+            <Text style={styles.text}>Take photo</Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.containers,
+              pressed ? styles.buttonPressed : null,
+            ]}
+            onPress={pickImage}
+          >
+            <Ionicons name="images-outline" size={75} color="white" />
+            <Text style={styles.text}>Choose from gallery</Text>
+          </Pressable>
+        </>
+      )}
+      {prediction && (
+        <View style={styles.predictionContainer}>
+          <Text style={styles.predictionText}>
+            Predicted Breed: {prediction}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -231,5 +285,16 @@ const styles = StyleSheet.create({
   },
   icons: {
     marginHorizontal: 4,
+  },
+  predictionContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: Colors.primary500,
+    borderRadius: 8,
+  },
+  predictionText: {
+    fontSize: 18,
+    color: "white",
+    textAlign: "center",
   },
 });
