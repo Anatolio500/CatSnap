@@ -1,11 +1,19 @@
 import { Pressable, StyleSheet, Text, View, Image } from "react-native";
 import { Colors } from "../../constants/styles";
+import { useNavigation } from "@react-navigation/native";
 
-function HistoryItem({ imageUrl, predictedBreed }) {
+function HistoryItem({ id, imageUrl, predictedBreed }) {
+  const navigation = useNavigation();
+
+  function handlePress() {
+    navigation.navigate("History result", { dataId: id, uploaded: false });
+  }
+
   return (
     <View style={styles.historyItem}>
       <Pressable
         style={({ pressed }) => (pressed ? styles.buttonPressed : null)}
+        onPress={handlePress}
       >
         <View>
           <Image source={{ uri: imageUrl }} style={styles.image} />

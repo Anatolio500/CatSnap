@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 300,
-    height: 300,
+    height: 200,
   },
   buttonContainer: {
     flexDirection: "row",

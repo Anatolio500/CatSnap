@@ -14,6 +14,7 @@ function HistoryList({ items }) {
 
     return (
       <HistoryItem
+        id={historyItemProps.id}
         imageUrl={historyItemProps.imageUrl}
         predictedBreed={historyItemProps.predictedBreed}
       />

@@ -18,6 +18,7 @@ import HistoryScreen from "./screens/HistoryScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import ValidationScreen from "./screens/ValidationScreen";
 import ValidationListScreen from "./screens/ValidationListScreen";
+import ResultScreen from "./screens/ResultScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -45,9 +46,33 @@ function AuthStack() {
   );
 }
 
-function ValidationStack() {
-  const authCtx = useContext(AuthContext);
+function UploadStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Upload image" component={UploadScreen} />
+      <Stack.Screen name="Upload result" component={ResultScreen} />
+    </Stack.Navigator>
+  );
+}
 
+function HistoryStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="History data" component={HistoryScreen} />
+      <Stack.Screen name="History result" component={ResultScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function ValidationStack() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -100,7 +125,7 @@ function AuthenticatedStack() {
       ) : null}
       <Tab.Screen
         name="History"
-        component={HistoryScreen}
+        component={HistoryStack}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="time-outline" color={color} size={size} />
@@ -109,7 +134,7 @@ function AuthenticatedStack() {
       />
       <Tab.Screen
         name="Upload"
-        component={UploadScreen}
+        component={UploadStack}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="camera" color={color} size={size} />

@@ -38,7 +38,15 @@ export async function createHistoryData(historyData, token) {
   return id;
 }
 
-export async function fetchHistoryData(email, token) {
+export async function fetchHistoryData(id, token) {
+  const response = await axios.get(
+    BACKEND_URL + `/historys/${id}.json?auth=${token}`
+  );
+
+  return response.data;
+}
+
+export async function fetchAllHistoryData(email, token) {
   const response = await axios.get(
     BACKEND_URL + "/historys.json?auth=" + token
   );

@@ -2,7 +2,7 @@ import React, { useContext, useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { AuthContext } from "../store/auth-context";
-import { fetchHistoryData } from "../util/http";
+import { fetchAllHistoryData } from "../util/http";
 import HistoryList from "../components/History/HistoryList";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 
@@ -16,7 +16,7 @@ function HistoryScreen() {
     useCallback(() => {
       const loadHistoryData = async () => {
         setLoading(true);
-        const data = await fetchHistoryData(authCtx.email, authCtx.token);
+        const data = await fetchAllHistoryData(authCtx.email, authCtx.token);
         console.log(data);
         setHistoryArray(data);
         setLoading(false);
