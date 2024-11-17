@@ -156,7 +156,7 @@ function UploadScreen() {
           <View style={styles.uploadContainer}>
             <Image
               source={{ uri: image }}
-              style={{ width: 300, height: 300 }}
+              style={{ width: 300, height: 200 }}
             />
           </View>
           <View style={styles.buttonContainer}>
@@ -204,13 +204,6 @@ function UploadScreen() {
             <Text style={styles.text}>Choose from gallery</Text>
           </Pressable>
         </>
-      )}
-      {prediction && (
-        <View style={styles.predictionContainer}>
-          <Text style={styles.predictionText}>
-            Predicted Breed: {prediction}
-          </Text>
-        </View>
       )}
     </View>
   );

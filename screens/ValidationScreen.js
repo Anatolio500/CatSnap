@@ -74,7 +74,7 @@ function ValidationScreen({ route }) {
 
   async function moveImage(fileName) {
     const storageRef = firebase.storage().ref();
-    const oldRef = storageRef.child(`${fileName}`); //ide kell vissza a validate/ a filename elé
+    const oldRef = storageRef.child(`validation/${fileName}`);
     const newRef = storageRef.child(`${predictedBreed}/${fileName}`);
 
     const downloadURL = await oldRef.getDownloadURL();
@@ -118,7 +118,7 @@ function ValidationScreen({ route }) {
       }
 
       const storageRef = firebase.storage().ref();
-      const imageRef = storageRef.child(`${fileName}`); // Ide is kell vissza a validation/ a filename elé
+      const imageRef = storageRef.child(`validation/${fileName}`); // Ide is kell vissza a validation/ a filename elé
 
       await imageRef.delete();
       await deleteValidationImage(validationId, authCtx.token);
