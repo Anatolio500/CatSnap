@@ -1,4 +1,5 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 
 import { AuthContext } from "../store/auth-context";
 import { fetchHistoryData } from "../util/http";
@@ -11,17 +12,19 @@ function HistoryScreen() {
 
   const authCtx = useContext(AuthContext);
 
-  useEffect(() => {
-    const loadHistoryData = async () => {
-      setLoading(true);
-      const data = await fetchHistoryData(authCtx.email, authCtx.token);
-      console.log(data);
-      setHistoryArray(data);
-      setLoading(false);
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const loadHistoryData = async () => {
+        setLoading(true);
+        const data = await fetchHistoryData(authCtx.email, authCtx.token);
+        console.log(data);
+        setHistoryArray(data);
+        setLoading(false);
+      };
 
-    loadHistoryData();
-  }, []);
+      loadHistoryData();
+    }, [authCtx.email, authCtx.token])
+  );
 
   if (loading) {
     return <LoadingOverlay message={"Loading data"} />;

@@ -1,6 +1,6 @@
 import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useState, useContext } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useState, useContext, useCallback } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
 import { firebase } from "../firebaseConfig";
@@ -9,7 +9,11 @@ import axios from "axios";
 
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 import { Colors } from "../constants/styles";
-import { createHistoryData, createValidationImage } from "../util/http";
+import {
+  createHistoryData,
+  createValidationImage,
+  fetchUserData,
+} from "../util/http";
 import { AuthContext } from "../store/auth-context";
 import { UserContext } from "../store/user-context";
 
@@ -21,6 +25,18 @@ function UploadScreen() {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [prediction, setPrediction] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadingData = async () => {
+        const data = await fetchUserData(authCtx.email, authCtx.token);
+        userCtx.setUser(data);
+      };
+
+      loadingData();
+    }, [authCtx.email, authCtx.token])
+  );
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -143,6 +159,10 @@ function UploadScreen() {
 
   function cancelUpload() {
     setImage(null);
+  }
+
+  if (loading) {
+    return <LoadingOverlay message={"Loading..."} />;
   }
 
   if (uploading) {
