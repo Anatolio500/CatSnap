@@ -9,6 +9,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useContext, useEffect, useState } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import axios from "axios";
 
 import { deleteValidationImage, fetchValidationImage } from "../util/http";
 import { AuthContext } from "../store/auth-context";
@@ -75,7 +76,7 @@ function ValidationScreen({ route }) {
   async function moveImage(fileName) {
     const storageRef = firebase.storage().ref();
     const oldRef = storageRef.child(`validation/${fileName}`);
-    const newRef = storageRef.child(`${predictedBreed}/${fileName}`);
+    const newRef = storageRef.child(`Breeds/${predictedBreed}/${fileName}`);
 
     const downloadURL = await oldRef.getDownloadURL();
 
@@ -101,6 +102,13 @@ function ValidationScreen({ route }) {
 
       await moveImage(fileName);
       await deleteValidationImage(validationId, authCtx.token);
+
+      const folderPath = `Breeds/${predictedBreed}`;
+      const imageCount = await countImagesInFolder(folderPath);
+
+      if (imageCount === 200) {
+        sendPredictedBreedToServer(predictedBreed);
+      }
 
       Alert.alert("Success", "Image validated and moved successfully!");
       navigation.navigate("Validation list");
@@ -128,6 +136,45 @@ function ValidationScreen({ route }) {
     } catch (error) {
       console.error("Error during the delete operation:", error);
       Alert.alert("Error", "An error occurred while deleting the image.");
+    }
+  };
+
+  const countImagesInFolder = async (folderPath) => {
+    try {
+      const storageRef = firebase.storage().ref();
+      const listRef = storageRef.child(folderPath);
+
+      const res = await listRef.listAll();
+
+      const itemCount = res.items.length;
+
+      console.log(`Number of images in ${folderPath}: ${itemCount}`);
+
+      return itemCount;
+    } catch (error) {
+      console.error("Error listing items in folder:", error);
+      throw error;
+    }
+  };
+
+  const sendPredictedBreedToServer = async (predictedBreed) => {
+    try {
+      const response = await axios.post("http://192.168.0.104:5001/retrain", {
+        predictedBreed: predictedBreed,
+      });
+      console.log(response.data.message);
+    } catch (error) {
+      if (error.response) {
+        console.error(
+          "Server error:",
+          error.response.status,
+          error.response.data
+        );
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+      } else {
+        console.error("Error setting up request:", error.message);
+      }
     }
   };
 
