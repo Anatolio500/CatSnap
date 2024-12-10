@@ -158,7 +158,7 @@ function ResultScreen({ route }) {
           </View>
         </View>
 
-        {predictionCorrect === null ? (
+        {predictionCorrect === undefined ? (
           <View style={styles.dataContainer}>
             <Text style={styles.Text}>Are you satisfied with the result?</Text>
             <View style={styles.buttonContainer}>

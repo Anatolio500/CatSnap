@@ -10,7 +10,7 @@ function ValidationList({ items }) {
     const validationItemProps = {
       id: item.id,
       imageUrl: item.imageUrl,
-      predictedBreed: item.prediction,
+      predictedBreed: item.prediction || "No label",
     };
 
     return (

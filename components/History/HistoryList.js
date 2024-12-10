@@ -10,6 +10,7 @@ function HistoryList({ items }) {
       id: item.id,
       imageUrl: item.imageUrl,
       predictedBreed: item.predictedBreed,
+      predictionCorrect: item.predictionCorrect,
     };
 
     return (
@@ -17,6 +18,7 @@ function HistoryList({ items }) {
         id={historyItemProps.id}
         imageUrl={historyItemProps.imageUrl}
         predictedBreed={historyItemProps.predictedBreed}
+        predictionCorrect={historyItemProps.predictionCorrect}
       />
     );
   }

@@ -1,13 +1,33 @@
 import { Pressable, StyleSheet, Text, View, Image } from "react-native";
 import { Colors } from "../../constants/styles";
 import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
-function HistoryItem({ id, imageUrl, predictedBreed }) {
+function HistoryItem({ id, imageUrl, predictedBreed, predictionCorrect }) {
   const navigation = useNavigation();
 
   function handlePress() {
     navigation.navigate("History result", { dataId: id, uploaded: false });
   }
+
+  function PredictionCorrectIcon() {
+    if (predictionCorrect) {
+      return (
+        <Ionicons
+          name="checkmark-outline"
+          style={{ color: "green" }}
+          size={40}
+        />
+      );
+    } else {
+      return (
+        <Ionicons name="close-outline" style={{ color: "red" }} size={40} />
+      );
+    }
+  }
+
+  console.log(predictionCorrect);
+  console.log(predictionCorrect !== null);
 
   return (
     <View style={styles.historyItem}>
@@ -17,7 +37,10 @@ function HistoryItem({ id, imageUrl, predictedBreed }) {
       >
         <View>
           <Image source={{ uri: imageUrl }} style={styles.image} />
-          <Text style={styles.title}>{predictedBreed}</Text>
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>{predictedBreed}</Text>
+            {predictionCorrect !== undefined ? <PredictionCorrectIcon /> : null}
+          </View>
         </View>
       </Pressable>
     </View>
@@ -51,5 +74,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     margin: 8,
+  },
+  textContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
