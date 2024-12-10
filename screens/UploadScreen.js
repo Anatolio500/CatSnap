@@ -89,8 +89,15 @@ function UploadScreen() {
 
       // Handle the prediction response
       console.log("Response from server:", response.data);
-      setPrediction(response.data.class_label);
-      console.log("prediction ", prediction);
+
+      // Extract the top 5 predictions
+      const top5 = response.data.top_5;
+      setPrediction({
+        classLabel: response.data.class_label,
+        top5: top5,
+      });
+
+      console.log("Prediction:", prediction);
 
       // Then, upload the image to Firebase Storage
       // Convert the image URI to a blob
@@ -134,14 +141,7 @@ function UploadScreen() {
           email: userCtx.email,
           imageUrl: historyDownloadUrl,
           predictedBreed: response.data.class_label,
-        },
-        authCtx.token
-      );
-      await createValidationImage(
-        {
-          email: userCtx.email,
-          imageUrl: validationDownloadUrl,
-          prediction: response.data.class_label,
+          topPredictions: response.data.top_5,
         },
         authCtx.token
       );
@@ -149,7 +149,11 @@ function UploadScreen() {
       setUploading(false);
       Alert.alert("Success", "Photo uploaded and prediction received.");
       setImage(null);
-      navigation.navigate("Upload result", { dataId: dataId, uploaded: true });
+      navigation.navigate("Upload result", {
+        dataId: dataId,
+        uploaded: true,
+        validationDownloadUrl: validationDownloadUrl,
+      });
     } catch (error) {
       console.error("Error:", error);
       setUploading(false);

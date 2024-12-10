@@ -22,7 +22,7 @@ def preprocess_image(image):
     image = image / 255.0  # Normalize to [0, 1]
     image = np.expand_dims(image, axis=0)  # Add batch dimension
     return image
-    
+
 @app.route('/')
 def home():
     return "Flask server is running!"
@@ -45,13 +45,22 @@ def predict():
     predicted_class_idx = int(np.argmax(predictions))  # Convert to native Python int
     predicted_class_label = labels[predicted_class_idx]  # Map index to label
 
+    # Get the top 5 predictions and their probabilities
+    top_5_indices = np.argsort(predictions)[-5:][::-1]  # Get indices of the 5 highest probabilities
+    top_5_labels = [labels[i] for i in top_5_indices]
+    top_5_probabilities = [predictions[i] for i in top_5_indices]
+
     # Convert predictions to a Python list of floats
     predictions_list = predictions.tolist()
 
     return jsonify({
         'predictions': predictions_list,
         'class_index': predicted_class_idx,
-        'class_label': predicted_class_label
+        'class_label': predicted_class_label,
+        'top_5': [
+            {'class_label': top_5_labels[i], 'probability': float(top_5_probabilities[i])}
+            for i in range(5)
+        ]
     })
 
 @app.route('/reload_model', methods=['POST'])

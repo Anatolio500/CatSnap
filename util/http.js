@@ -61,6 +61,13 @@ export async function fetchAllHistoryData(email, token) {
   return responseArray;
 }
 
+export async function updateHistoryData(id, token, historyData) {
+  return axios.patch(
+    BACKEND_URL + `/historys/${id}.json?auth=` + token,
+    historyData
+  );
+}
+
 // Validation
 
 export async function createValidationImage(data, token) {
