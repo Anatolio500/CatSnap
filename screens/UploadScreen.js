@@ -78,7 +78,7 @@ function UploadScreen() {
       });
 
       // Replace with your Flask server's IP address and port
-      const serverUrl = "http://192.168.0.104:5000/predict"; // Update this with your server's IP
+      const serverUrl = "http://192.168.0.106:5000/predict"; // Update this with your server's IP
 
       // Send the image to your Flask backend
       const response = await axios.post(serverUrl, formData, {
