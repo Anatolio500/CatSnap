@@ -8,19 +8,16 @@ import io
 app = Flask(__name__)
 CORS(app)
 
-# Load class labels from labels.txt
 with open('labels.txt', 'r') as f:
     labels = [line.strip() for line in f.readlines()]
 
-# Load the Keras model
 model = tf.keras.models.load_model('cat_breed_model.h5')
 
 def preprocess_image(image):
-    """Resize and normalize the image for the model."""
-    image = image.resize((224, 224))  # Adjust size based on your model
+    image = image.resize((224, 224)) 
     image = np.array(image).astype('float32')
-    image = image / 255.0  # Normalize to [0, 1]
-    image = np.expand_dims(image, axis=0)  # Add batch dimension
+    image = image / 255.0 
+    image = np.expand_dims(image, axis=0)
     return image
 
 @app.route('/')
@@ -32,25 +29,21 @@ def predict():
     if 'image' not in request.files:
         return jsonify({'error': 'No image uploaded'}), 400
 
-    # Get the uploaded image
     img_file = request.files['image']
     img_bytes = img_file.read()
     image = Image.open(io.BytesIO(img_bytes))
 
-    # Preprocess the image
     input_data = preprocess_image(image)
 
-    # Make prediction
-    predictions = model.predict(input_data)[0]  # Get prediction probabilities
-    predicted_class_idx = int(np.argmax(predictions))  # Convert to native Python int
-    predicted_class_label = labels[predicted_class_idx]  # Map index to label
+    predictions = model.predict(input_data)[0]  
+    predicted_class_idx = int(np.argmax(predictions)) 
+    predicted_class_label = labels[predicted_class_idx] 
 
-    # Get the top 5 predictions and their probabilities
-    top_5_indices = np.argsort(predictions)[-5:][::-1]  # Get indices of the 5 highest probabilities
+   
+    top_5_indices = np.argsort(predictions)[-5:][::-1] 
     top_5_labels = [labels[i] for i in top_5_indices]
     top_5_probabilities = [predictions[i] for i in top_5_indices]
 
-    # Convert predictions to a Python list of floats
     predictions_list = predictions.tolist()
 
     return jsonify({
@@ -69,12 +62,10 @@ def reload_model():
     global labels
 
     try:
-        # Reload the labels
         with open('labels.txt', 'r') as f:
             labels = [line.strip() for line in f.readlines()]
         print("Labels reloaded successfully.")
 
-        # Reload the model
         model = tf.keras.models.load_model('cat_breed_model.h5')
         print("Model reloaded successfully.")
 

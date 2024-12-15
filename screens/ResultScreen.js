@@ -89,8 +89,6 @@ function ResultScreen({ route }) {
     setPredictionCorrect(false);
   };
 
-  console.log(predictionCorrect);
-
   return (
     <View style={styles.rootContainer}>
       <ScrollView>

@@ -17,7 +17,6 @@ function HistoryScreen() {
       const loadHistoryData = async () => {
         setLoading(true);
         const data = await fetchAllHistoryData(authCtx.email, authCtx.token);
-        console.log(data);
         setHistoryArray(data);
         setLoading(false);
       };

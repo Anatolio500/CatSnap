@@ -26,9 +26,6 @@ function HistoryItem({ id, imageUrl, predictedBreed, predictionCorrect }) {
     }
   }
 
-  console.log(predictionCorrect);
-  console.log(predictionCorrect !== null);
-
   return (
     <View style={styles.historyItem}>
       <Pressable

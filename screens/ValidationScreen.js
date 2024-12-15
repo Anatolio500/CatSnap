@@ -126,7 +126,7 @@ function ValidationScreen({ route }) {
       }
 
       const storageRef = firebase.storage().ref();
-      const imageRef = storageRef.child(`validation/${fileName}`); // Ide is kell vissza a validation/ a filename elé
+      const imageRef = storageRef.child(`validation/${fileName}`);
 
       await imageRef.delete();
       await deleteValidationImage(validationId, authCtx.token);

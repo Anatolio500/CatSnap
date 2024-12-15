@@ -9,11 +9,7 @@ import axios from "axios";
 
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 import { Colors } from "../constants/styles";
-import {
-  createHistoryData,
-  createValidationImage,
-  fetchUserData,
-} from "../util/http";
+import { createHistoryData, fetchUserData } from "../util/http";
 import { AuthContext } from "../store/auth-context";
 import { UserContext } from "../store/user-context";
 
@@ -68,39 +64,28 @@ function UploadScreen() {
     setUploading(true);
 
     try {
-      // First, send the image to the Flask backend for prediction
       const formData = new FormData();
 
       formData.append("image", {
         uri: image,
-        type: "image/jpeg", // Adjust the type if needed
-        name: "photo.jpg", // You can give any name
+        type: "image/jpeg",
+        name: "photo.jpg",
       });
 
-      // Replace with your Flask server's IP address and port
-      const serverUrl = "http://192.168.0.106:5000/predict"; // Update this with your server's IP
+      const serverUrl = "http://192.168.0.106:5000/predict";
 
-      // Send the image to your Flask backend
       const response = await axios.post(serverUrl, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      // Handle the prediction response
-      console.log("Response from server:", response.data);
-
-      // Extract the top 5 predictions
       const top5 = response.data.top_5;
       setPrediction({
         classLabel: response.data.class_label,
         top5: top5,
       });
 
-      console.log("Prediction:", prediction);
-
-      // Then, upload the image to Firebase Storage
-      // Convert the image URI to a blob
       const blob = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.onload = function () {
@@ -127,14 +112,11 @@ function UploadScreen() {
 
       await validationRef.put(blob);
 
-      // We're done with the blob, close and release it
       blob.close();
 
       const historyDownloadUrl = await historyRef.getDownloadURL();
-      console.log("File is available history at:", historyDownloadUrl);
 
       const validationDownloadUrl = await validationRef.getDownloadURL();
-      console.log("File is available validation at:", validationDownloadUrl);
 
       const dataId = await createHistoryData(
         {

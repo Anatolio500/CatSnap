@@ -5,7 +5,6 @@ import ValidationItem from "./ValidationItem";
 function ValidationList({ items }) {
   function renderValidationItem(itemData) {
     const item = itemData.item;
-    console.log(itemData.item);
 
     const validationItemProps = {
       id: item.id,

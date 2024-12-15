@@ -84,7 +84,7 @@ def retrain():
         return jsonify({'error': str(e)}), 500
 
 
-def perform_lwf(new_breed_name, new_breed_images_dir, labels_txt_path='labels.txt', alpha=0.5, temperature=2.0, epochs=10, batch_size=32):
+def perform_lwf(new_breed_name, new_breed_images_dir, labels_txt_path='labels.txt', alpha=0.5, temperature=2.0, epochs=120, batch_size=32):
     image_size = (224, 224)
 
     model_initial = load_model('cat_breed_model.h5')
